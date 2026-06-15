@@ -1,0 +1,21 @@
+{
+  "name": "techfest-portal",
+  "version": "1.0.0",
+  "description": "Techfest Portal",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node",
+    "start": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
