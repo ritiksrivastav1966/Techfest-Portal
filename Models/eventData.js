@@ -22,7 +22,12 @@ const eventSchema = new mongoose.Schema({
     description : {
         type : String,
         required : [true,'Tell something about the event']
-    }
+    },
+    createdBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Users',
+    required: true
+}
     
 });
 

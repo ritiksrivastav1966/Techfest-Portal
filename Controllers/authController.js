@@ -87,3 +87,36 @@ exports.protect = catchAsync( async(req,res,next)=>{
 }
 
 );
+
+exports.updateRoles = catchAsync(async(req,res,next)=>{
+    const {email,role,adminKey} = req.body;
+    if(adminKey!==process.env.ADMIN_KEY){
+        return next(new AppError("Invalid admin key",403));
+    }
+    const allowedRoles = ['host','admin'];
+    if(!allowedRoles.includes(role)){
+        return next(new AppError("Invalid role add host or admin",400));
+    }
+    
+    const user = await Users.findOneAndUpdate({email},{role},{returnDocument:'after'});
+    if(!user){
+        return next(new AppError("No user exists with this email",404));
+    }
+    
+    res.status(200).json({
+        status : 'success',
+        message :'Role updated successfully',
+        data : {
+            user
+        }
+    });
+});
+exports.restrictTo = (...roles)=>{
+    return (req,res,next) => {
+        if(!roles.includes(req.user.role)){
+            return next(new AppError('You have no permission to access this feature',403));
+        }
+        next();
+    }
+   
+};

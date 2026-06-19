@@ -36,9 +36,11 @@ exports.getEvent =  (catchAsync(async(req,res,next)=>{
 })
 );
 
-exports.createEvents = (catchAsync(async(req,res)=>{
+exports.createEvents = (catchAsync(async(req,res,next)=>{
       
-         const newEvent = await Events.create(req.body);
+         const newEvent = await Events.create({...req.body,
+            createdBy:req.user._id
+         });
     res.status(200).json({
         status : "success",
         
@@ -54,6 +56,9 @@ exports.deleteEvents = (catchAsync(async(req,res,next)=>{
   
       
            const event = await Events.findByIdAndDelete(req.params.id);
+           if(event.createdBy.toString()!=req.user.id){
+            return next(new AppError('You can delete only your own events'))
+           }
            if(!event){
             return next(new AppError("No events exist with that id",404));
            }
@@ -69,12 +74,15 @@ exports.deleteEvents = (catchAsync(async(req,res,next)=>{
 })
 );
 
-exports.updateEvents = (catchAsync(async(req,res)=>{
+exports.updateEvents = (catchAsync(async(req,res,next)=>{
           
            const event = await Events.findByIdAndUpdate(req.params.id,req.body,{
             new: true,
             runValidators:true
            });
+           if(event.createdBy.toString()!=req.user.id){
+            return next(new AppError('You can  only modify your own events',403))
+           };
            if(!event){
             return next(new AppError("No events exist with that id",404));
            }

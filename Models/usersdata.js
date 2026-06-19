@@ -36,7 +36,11 @@ const userSchema = new mongoose.Schema({
        department:{
         type:String,
         required:[true,"Please specify your department"]
-       }
+       },role: {
+  type: String,
+  enum: ['student', 'organizer', 'admin'],
+  default: 'student'
+}
 });
 
  userSchema.pre('save',async function(){
