@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const catchAsync = require('../utils/catchAsync');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 
 const userSchema = new mongoose.Schema({
@@ -38,9 +39,11 @@ const userSchema = new mongoose.Schema({
         required:[true,"Please specify your department"]
        },role: {
   type: String,
-  enum: ['student', 'organizer', 'admin'],
+  enum: ['student', 'host', 'admin'],
   default: 'student'
-}
+},
+     passwordresettoken : String,
+    passwordresetexpires:Date
 });
 
  userSchema.pre('save',async function(){
@@ -56,5 +59,15 @@ const userSchema = new mongoose.Schema({
                userPassword
     );
  }
+
+ userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordresettoken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    console.log({resetToken},this.passwordresettoken);
+    this.passwordresetexpires = Date.now() + 10*60*1000;
+
+    return resetToken;
+    
+}
 
 module.exports = mongoose.model('Users',userSchema);

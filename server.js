@@ -3,13 +3,14 @@ process.on('unhandledRejection',err=>{
     console.log(err.name,err.message);
     process.exit(1);
 })
-
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
+dotenv.config({path : './.env'});
+const mongoose = require('mongoose');
+
 
 const app = require('./app');
 
-dotenv.config({path : './.env'});
 const DB =process.env.DATABASE.replace(
     '<PASSWORD>',
     process.env.DATABASE_PASSWORD
