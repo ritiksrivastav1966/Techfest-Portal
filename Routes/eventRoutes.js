@@ -7,7 +7,8 @@ const router = express.Router();
 
 router
      .get('/',eventController.getEvents)
-     .post('/',authController.protect,authController.restrictTo('host','admin'),eventController.createEvents);
+     .post('/',authController.protect,authController.restrictTo('host','admin'),eventController.createEvents)
+     .get('/getParticipants/:id',authController.protect,authController.restrictTo('admin','host'),eventController.getParticipant);
 router
      .get('/:id',eventController.getEvent)
      .patch('/:id',authController.protect,authController.restrictTo('host'),eventController.updateEvents)
