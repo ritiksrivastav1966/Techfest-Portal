@@ -57,10 +57,7 @@ exports.cancelRegistration = catchAsync(async(req,res,next)=>{
         user:req.user._id,
         event:req.params.id
     });
-    console.log(req.user._id);
-    console.log(req.params.id);
-    const all = await Registrations.find();
-    console.log(all);
+   
     if(!Event){
         return next(new AppError(`You haven't registered for the event`,404))
     };
