@@ -4,19 +4,110 @@ const Events = require('./../Models/eventData');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const Registrations = require('./../Models/registrationData');
-exports.getEvents =(catchAsync( async(req,res,next)=>{
+
+
+exports.getEvents = catchAsync(async (req, res, next) => {
+   
+    const queryObj = { ...req.query };
+
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+
+   
+    const mongoQuery = {};
     
-         const event = await Events.find();
+    for (const key in queryObj) {
+        
+        const match = key.match(/^([^\[]+)\[([^\]]+)\]$/);
+        
+        if (match) {
+            const field = match[1];          
+            const operator = `$${match[2]}`; 
+            
+            
+            if (!mongoQuery[field]) {
+                mongoQuery[field] = {};
+            }
+            
+            mongoQuery[field][operator] = queryObj[key];
+        } else {
+            
+            mongoQuery[key] = queryObj[key];
+        }
+    }
+
+   let query = Events.find(mongoQuery);
+
+if (req.query.sort) {
+
+    const sortBy =
+        req.query.sort
+            .split(',')
+            .join(' ');
+
+    query = query.sort(sortBy);
+
+} else {
+
+    query = query.sort('-date');
+
+}
+   
+if(req.query.fields){
+
+    const fields = req.query.fields
+        .split(',')
+        .join(' ');
+
+    query = query.select(fields);
+
+}
+else{
+
+    query = query.select('-__v');
+
+}
+// PAGINATION
+
+const page =
+    req.query.page * 1 || 1;
+
+const limit =
+    req.query.limit * 1 || 100;
+
+const skip =
+    (page - 1) * limit;
+
+query =
+    query.skip(skip)
+         .limit(limit);
+
+if(req.query.page){
+
+    const numEvents =
+        await Events.countDocuments();
+
+    if(skip >= numEvents){
+
+        return next(
+            new AppError(
+                'This page does not exist',
+                404
+            )
+        );
+    }
+}
+const events = await query;
+
+    
     res.status(200).json({
-        status : "success",
-        no_of_events : event.length,
-        data : {
-            event
+        status: "success",
+        no_of_events: events.length,
+        data: {
+            events 
         }
     });
-    
-   
-}));
+});
 
 exports.getEvent =  (catchAsync(async(req,res,next)=>{
           
