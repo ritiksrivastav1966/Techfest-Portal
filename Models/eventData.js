@@ -27,6 +27,18 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Users',
     required: true
+},
+status:{
+    type:String,
+    enum:[
+        'upcoming',
+        'completed'
+    ],
+    default:'upcoming'
+},
+reminderSent:{
+    type:Boolean,
+    default:false
 }
     
 });

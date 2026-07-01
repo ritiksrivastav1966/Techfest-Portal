@@ -10,6 +10,8 @@ const mongoose = require('mongoose');
 
 
 const app = require('./app');
+require('./Jobs/updateEvent');
+require('./Jobs/sendReminder');
 
 const DB =process.env.DATABASE.replace(
     '<PASSWORD>',

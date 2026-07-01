@@ -21,7 +21,7 @@ const limiter = rateLimit({
         status:"fail",
         message:"Too many requests from this IP, try again later"
     }
-})
+});
 app.use('/techfest/v1',limiter);
 app.use('/techfest/v1/events',eventRoutes);
 app.use('/techfest/v1/users',userRoutes);
